@@ -1,7 +1,49 @@
-def InvalidAtomicSymbol(KeyError):
+import json
+
+
+class InvalidAtomicSymbol(KeyError):
     """
     Raised when an invalid atomic symbol is looked up.
     """
+
+
+class Element(object):
+    def __init__(self, symbol, weight):
+        self.symbol = symbol
+        self.weight = weight
+
+    def __hash__(self):
+        return hash(self.symbol)
+
+
+class PeriodicTable(object):
+    """Represent a table, load it up, create elements etc."""
+
+    DEFAULT_JSON = "periodic_table.json"
+    instance = None
+
+    def __init__(self):
+        super(PeriodicTable, self)
+        self.elements = set()
+
+        oxygen = Element("O", weight=15.999)
+        self.elements.add(oxygen)
+
+    @classmethod
+    def get(cls):
+        """ Get an existing instance if there is one or create it """
+        if cls.instance == None:
+            cls.instance = cls()
+        return cls.instance
+
+    def element_by_symbol(self, symbol: str) -> Element:
+        for e in self.elements:
+            if symbol == e.symbol:
+                return e
+        raise InvalidAtomicSymbol("Symbol {} not found".format(symbol))
+
+    def __len__(self):
+        return len(self.elements)
 
 
 def get_atomic_weight_for_element(element_symbol: str) -> float:
@@ -20,7 +62,6 @@ def get_atomic_weight_for_element(element_symbol: str) -> float:
     extract the relevant data and build a structure here. Whichever
     approach you take, please include any code you used to do this.
     """
-    if element_symbol == "O":
-        return 15.999
-    else:
-        raise NotImplemented("You need to implement this function.")
+    t = PeriodicTable.get()
+    element = t.element_by_symbol(element_symbol)
+    return element.weight
