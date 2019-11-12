@@ -1,4 +1,5 @@
 import json
+import os
 
 
 class InvalidAtomicSymbol(KeyError):
@@ -19,21 +20,28 @@ class Element(object):
 class PeriodicTable(object):
     """Represent a table, load it up, create elements etc."""
 
-    DEFAULT_JSON = "periodic_table.json"
+    DEFAULT_JSON = os.path.join(os.path.dirname(__file__), "periodic_table.json")
     instance = None
 
-    def __init__(self):
+    def __init__(self, filename=DEFAULT_JSON):
         super(PeriodicTable, self)
         self.elements = set()
+        self.filename = filename
+        self._load_from_jsonfile(filename)
 
-        oxygen = Element("O", weight=15.999)
-        self.elements.add(oxygen)
+    def _load_from_jsonfile(self, filename: str):
+        """Load a periodic table from a json format file"""
+        with open(filename) as jf:
+            j = json.load(jf)
+            for je in j["elements"]:
+                e = Element(je["symbol"], je["atomic_mass"])
+                self.elements.add(e)
 
     @classmethod
-    def get(cls):
+    def get(cls, filename=DEFAULT_JSON):
         """ Get an existing instance if there is one or create it """
         if cls.instance == None:
-            cls.instance = cls()
+            cls.instance = cls(filename)
         return cls.instance
 
     def element_by_symbol(self, symbol: str) -> Element:
@@ -44,6 +52,10 @@ class PeriodicTable(object):
 
     def __len__(self):
         return len(self.elements)
+
+    def __getitem__(self, symbol: str):
+        """Make periodic table behave like partially like a dictionary"""
+        return self.elements[key]
 
 
 def get_atomic_weight_for_element(element_symbol: str) -> float:
