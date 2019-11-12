@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 
 class InvalidAtomicSymbol(KeyError):
@@ -25,7 +26,7 @@ class PeriodicTable(object):
 
     def __init__(self, filename=DEFAULT_JSON):
         super(PeriodicTable, self)
-        self.elements = set()
+        self.elements = {}
         self.filename = filename
         self._load_from_jsonfile(filename)
 
@@ -35,7 +36,7 @@ class PeriodicTable(object):
             j = json.load(jf)
             for je in j["elements"]:
                 e = Element(je["symbol"], je["atomic_mass"])
-                self.elements.add(e)
+                self.elements[e.symbol] = e
 
     @classmethod
     def get(cls, filename=DEFAULT_JSON):
@@ -44,18 +45,19 @@ class PeriodicTable(object):
             cls.instance = cls(filename)
         return cls.instance
 
-    def element_by_symbol(self, symbol: str) -> Element:
-        for e in self.elements:
-            if symbol == e.symbol:
-                return e
-        raise InvalidAtomicSymbol("Symbol {} not found".format(symbol))
-
     def __len__(self):
         return len(self.elements)
 
-    def __getitem__(self, symbol: str):
+    def __getitem__(self, key):
         """Make periodic table behave like partially like a dictionary"""
-        return self.elements[key]
+        try:
+            e = self.elements[key]
+        except KeyError as k:
+            raise InvalidAtomicSymbol("Symbol {} not found".format(key))
+        return e
+
+    def __contains__(self, key):
+        return key in self.elements
 
 
 def get_atomic_weight_for_element(element_symbol: str) -> float:
@@ -75,5 +77,5 @@ def get_atomic_weight_for_element(element_symbol: str) -> float:
     approach you take, please include any code you used to do this.
     """
     t = PeriodicTable.get()
-    element = t.element_by_symbol(element_symbol)
+    element = t[element_symbol]
     return element.weight

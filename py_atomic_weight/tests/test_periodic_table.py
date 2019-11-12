@@ -32,16 +32,16 @@ def test_element():
 def test_periodic_table_element_by_symbol():
     """Check that an element can be obtained by symbol"""
     table = periodic_table.PeriodicTable.get()
-    e = table.element_by_symbol("O")
+    e = table["O"]
     assert e.weight == 15.999
     assert e.symbol == "O"
 
 
-def test_periodic_table_element_by_symbol():
+def test_periodic_table_getitem_nonchemical():
     """Check that a lookup of a non-element fails"""
     table = periodic_table.PeriodicTable.get()
     with pytest.raises(periodic_table.InvalidAtomicSymbol):
-        e = table.element_by_symbol("X")
+        e = table["X"]
 
 
 def test_table_count():
@@ -56,8 +56,21 @@ def test_table_count():
     """ Check for all the elements we expect.
     """
     t = periodic_table.PeriodicTable.get()
-    for s in data_for_tests.symbols:
-        assert s in PeriodicTable
+    for s in data_for_test.symbols:
+        assert s in t
+
+
+def test_table_iterable():
+    """ Check that the periodic table is
+        iterable. 
+        Also check the other way around that no
+        unexpected symbols are present.
+    """
+    t = periodic_table.PeriodicTable.get()
+    count = 0
+    for e in t:
+        count += 1
+        assert e.symbol in data_for_test.symbols
 
 
 def test_table_load_from_jsonfile():
@@ -66,10 +79,10 @@ def test_table_load_from_jsonfile():
     it's part of the machinery so it must be tested."""
     t = periodic_table.PeriodicTable("test_1.json")
     assert len(t) == 2
-    assert t.element_by_symbol("He")
-    assert t.element_by_symbol("Li")
+    assert "He" in t
+    assert "Li" in t
     with pytest.raises(periodic_table.InvalidAtomicSymbol):
-        e = t.element_by_symbol("O")
+        e = t["O"]
 
 
 ################### Test Compounds
