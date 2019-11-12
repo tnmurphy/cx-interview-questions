@@ -68,9 +68,9 @@ def test_table_iterable():
     """
     t = periodic_table.PeriodicTable.get()
     count = 0
-    for e in t:
+    for symbol in t:
         count += 1
-        assert e.symbol in data_for_test.symbols
+        assert symbol in data_for_test.symbols
 
 
 def test_table_load_from_jsonfile():
@@ -115,6 +115,9 @@ def test_compound_create_simple_invalid():
     with pytest.raises(periodic_table.InvalidFormula):
         c = periodic_table.Compound("2O")
 
+def test_compound_create_simple_invalid_count_1():
+    with pytest.raises(periodic_table.InvalidFormula):
+        c = periodic_table.Compound("O1")
 
 def test_compound_create_2letter1letter():
     """Use an initial 2 char symbol that 
@@ -129,6 +132,8 @@ def test_compound_create_1letter1letter():
 def test_compound_create_1letter1letternumbered():
     c = periodic_table.Compound("N2O2")
 
+def test_compound_create_1letter1letternumbered():
+    c = periodic_table.Compound("N2O2")
 
 def test_compound_create_3letter1letter():
-    c = periodic_table.Compound("UUeO")
+    c = periodic_table.Compound("CaCl2O")
