@@ -104,7 +104,11 @@ class Compound(object):
     @classmethod
     def parse_formula_to_tuples(cls, formula: str) -> list:
         """This method uses a regexp and finditer to look for elements
-        and their counts. It checks that they are contiguous."""
+        and their counts. It checks that they are contiguous.
+
+        It might make sense to memoize this if the same formula is to 
+        be looked up frequently. Some sort of ring buffer perhaps.
+        """
         element_counts = []
 
         if formula == "":
@@ -112,8 +116,8 @@ class Compound(object):
 
         index = 0
         old_match_end = 0  # used to check that the matches are contiguous
+        match_end = 0
         for m in cls.formula_re.finditer(formula):
-            print(m.groups())
             match_start, match_end = m.span()
             if match_start != old_match_end:
                 raise InvalidFormula(
@@ -133,6 +137,16 @@ class Compound(object):
 
             element = cls.periodic_table[m.groups()[-2]]
             element_counts.append((element, count))
+
+        if match_end != len(formula):
+            raise InvalidFormula(
+                "Formula contains trailing nonsense characters '{}'".format(formula)
+            )
+
+        if len(element_counts) == 0:
+            raise InvalidFormula(
+                "Formula contains characters but no elements. '{}'".format(formula)
+            )
 
         return element_counts
 

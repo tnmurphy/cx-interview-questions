@@ -1,3 +1,5 @@
+import periodic_table
+
 def get_atomic_weight_for_compound(compound: str) -> float:
     """
     This function needs to be implemented.
@@ -31,7 +33,6 @@ def get_atomic_weight_for_compound(compound: str) -> float:
     """
     if not compound:
         return 0.0
-    elif compound == "O2":
-        return 15.999 * 2
-    else:
-        raise NotImplementedError("This function has not been implemented yet")
+
+    c = periodic_table.Compound(compound) 
+    return c.weight()

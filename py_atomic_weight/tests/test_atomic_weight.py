@@ -5,8 +5,9 @@
 
 """
 import atomic_weight
+import periodic_table
 
-atomic_weight_comparison_precision = 0.01
+atomic_weight_comparison_precision = 0.0001
 
 
 def verify_atomic_weight_for_substance(formula: str, expected: float):
@@ -22,6 +23,19 @@ def test_for_chemical_trivial_case():
 
 def test_for_chemical_O2():
     verify_atomic_weight_for_substance("O2", 2 * 15.999)
+
+
+def test_for_arbitrarily_complicated_substance():
+    """Not a real substance though"""
+    verify_atomic_weight_for_substance("Al4O2H2", 141.94015428)
+
+
+def test_compound_weight_multi():
+    verify_atomic_weight_for_substance("N2O2", 15.999 * 2 + 14.007 * 2)
+
+
+def test_compound_weight_multi_2letter():
+    verify_atomic_weight_for_substance("Al4O2", 15.999 * 2 + 26.98153857 * 4)
 
 
 # Add more tests here.
@@ -41,7 +55,7 @@ def test_for_unknown_chemical():
     """Make sure the method fails for an unknown substance"""
     try:
         verify_atomic_weight_for_substance(",.!", 1.0)
-    except NotImplementedError as e:
+    except periodic_table.InvalidFormula as e:
         return
 
     raise AssertionError("test_for_unknown_chemical() didn't fail")

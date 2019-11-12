@@ -115,9 +115,26 @@ def test_compound_create_simple_invalid():
     with pytest.raises(periodic_table.InvalidFormula):
         c = periodic_table.Compound("2O")
 
+
 def test_compound_create_simple_invalid_count_1():
     with pytest.raises(periodic_table.InvalidFormula):
         c = periodic_table.Compound("O1")
+
+
+def test_compound_create_completely_invalid():
+    with pytest.raises(periodic_table.InvalidFormula):
+        c = periodic_table.Compound(",.$£")
+
+
+def test_compound_create_badchars_beginning():
+    with pytest.raises(periodic_table.InvalidFormula):
+        c = periodic_table.Compound(",.$£He")
+
+
+def test_compound_create_badchars_end():
+    with pytest.raises(periodic_table.InvalidFormula):
+        c = periodic_table.Compound("He,.$£")
+
 
 def test_compound_create_2letter1letter():
     """Use an initial 2 char symbol that 
@@ -132,8 +149,25 @@ def test_compound_create_1letter1letter():
 def test_compound_create_1letter1letternumbered():
     c = periodic_table.Compound("N2O2")
 
+
 def test_compound_create_1letter1letternumbered():
     c = periodic_table.Compound("N2O2")
 
+
 def test_compound_create_3letter1letter():
     c = periodic_table.Compound("CaCl2O")
+
+
+def test_compound_weight_simple():
+    c = periodic_table.Compound("O2")
+    assert c.weight() == 15.999 * 2
+
+
+def test_compound_weight_multi():
+    c = periodic_table.Compound("N2O2")
+    assert c.weight() == 15.999 * 2 + 14.007 * 2
+
+
+def test_compound_weight_multi_2letter():
+    c = periodic_table.Compound("Al4O2")
+    assert c.weight() == 15.999 * 2 + 26.98153857 * 4
